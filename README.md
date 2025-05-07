@@ -1,30 +1,67 @@
-# new-project-template
+# Ollama Server Deployment
 
-once read, please replace this readme with one detailing your service, what it does, how to use it, and any other relevant information. 😊
+This repository contains the Kubernetes configuration to deploy an Ollama instance running the Phi-3 Mini language model. This setup provides a lightweight yet effective LLM serving capability.
 
-This repository is a template for creating new projects with Kubernetes-based deployments. It includes tools and configurations to streamline the setup process.
+## Features
 
-## Key Features
+- **Phi-3 Mini Model**: A lightweight, efficient model from Microsoft that balances performance and resource requirements
+- **Persistent Storage**: Automatically saves downloaded models to avoid re-downloading
+- **Kubernetes-Ready**: Complete deployment setup with health checks and resource limits
+- **Auto-initialization**: Automatically downloads the Phi-3 Mini model during deployment
+- **Secure Access**: HTTPS access via custom domain with TLS encryption
 
-- **Deployment YAML Generator**: A Bash script (`init.sh`) to generate Kubernetes deployment, service, and optional ingress configurations.
-- **GitHub Actions Workflow**: Automates the deployment of your service to a Kubernetes cluster.
+## Deployment Information
+
+The Ollama server runs on port 11434 and exposes API endpoints for managing and using language models.
+
+### Access Information
+
+- **Domain**: ollama.theclusterflux.com
+- **Protocol**: HTTPS (SSL enforced)
+- **API Base URL**: https://ollama.theclusterflux.com
+
+### Resource Requirements
+
+- Memory: 2-4 GB
+- CPU: 1-2 cores
+- Storage: 10 GB persistent volume
 
 ## How to Use
 
-1. **Clone or Use as a Template**:
-   - Clone this repository or use the "Use this template" button on GitHub to create a new repository.
+### API Usage
 
-2. **Run the Deployment YAML Generator**:
-   - Execute the `init.sh` script to generate Kubernetes YAML files:
-     ```bash
-     ./init.sh
-     ```
+Once deployed, you can interact with the Ollama API at the secure endpoint `https://ollama.theclusterflux.com`. Common API endpoints:
 
-3. **Add Your Code**:
-   - Add your service code and a `Dockerfile` to the repository.
-   - Ensure the service is exposed on port 8080 or update the generated YAML accordingly.
+- `/api/generate` - Generate text from a prompt
+- `/api/chat` - Chat with the model
+- `/api/tags` - List available models
 
-4. **Trigger Deployment**:
-   - Push changes to the `main` branch to deploy your service using the pre-configured GitHub Actions workflow.
+### Example API Call
 
-This template simplifies Kubernetes deployments and ensures consistency across projects.
+```bash
+curl -X POST https://ollama.theclusterflux.com/api/generate -d '{
+  "model": "phi3:mini",
+  "prompt": "Explain quantum computing in simple terms:",
+  "stream": false
+}'
+```
+
+## Model Information
+
+**Phi-3 Mini** is an efficient, lightweight model developed by Microsoft. It offers:
+
+- 3.8 billion parameters
+- Good performance on reasoning tasks
+- Low resource requirements compared to larger models
+- Trained on high-quality data
+
+## Deployment Components
+
+The deployment includes:
+
+1. **Ollama Server**: Running the official Ollama image
+2. **Persistent Storage**: A 10Gi persistent volume at `/data/ollama-models` on the host
+3. **Model Initialization Job**: Automatically downloads the Phi-3 Mini model
+4. **Ingress Configuration**: Provides secure HTTPS access via domain name
+
+For more information about Ollama, visit the [official documentation](https://github.com/ollama/ollama).
